@@ -160,7 +160,7 @@ export	ARCH CPU BOARD VENDOR SOC
 
 # set default to nothing for native builds
 ifeq ($(HOSTARCH),$(ARCH))
-CROSS_COMPILE ?= arm-linux-
+CROSS_COMPILE ?=
 endif
 
 # load other configuration
@@ -287,7 +287,7 @@ ONENAND_BIN ?= $(obj)onenand_ipl/onenand-ipl-2k.bin
 endif
 
 __OBJS := $(subst $(obj),,$(OBJS))
-__LIBS := $(subst $(obj),,$(LIBBOARD)) $(subst $(obj),,$(LIBS))
+__LIBS := $(subst $(obj),,$(LIBS)) $(subst $(obj),,$(LIBBOARD))
 
 #########################################################################
 #########################################################################
@@ -3032,9 +3032,6 @@ rd6281a_config: unconfig
 
 sbc2410x_config: unconfig
 	@$(MKCONFIG) $(@:_config=) arm arm920t sbc2410x NULL s3c24x0
-
-mini2440_config: unconfig
-	@$(MKCONFIG) $(@:_config=) arm arm920t mini2440 NULL s3c24x0
 
 scb9328_config	:	unconfig
 	@$(MKCONFIG) $(@:_config=) arm arm920t scb9328 NULL imx

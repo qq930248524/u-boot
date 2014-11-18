@@ -158,6 +158,7 @@ sinclude $(obj)include/autoconf.mk
 include $(obj)include/config.mk
 export	ARCH CPU BOARD VENDOR SOC
 
+CROSS_COMPILE = arm-linux-
 # set default to nothing for native builds
 ifeq ($(HOSTARCH),$(ARCH))
 CROSS_COMPILE ?=
@@ -3033,6 +3034,9 @@ rd6281a_config: unconfig
 sbc2410x_config: unconfig
 	@$(MKCONFIG) $(@:_config=) arm arm920t sbc2410x NULL s3c24x0
 
+mini2440_config :	unconfig
+	@$(MKCONFIG) $(@:_config=) arm arm920t mini2440 NULL s3c24x0
+
 scb9328_config	:	unconfig
 	@$(MKCONFIG) $(@:_config=) arm arm920t scb9328 NULL imx
 
@@ -3044,6 +3048,8 @@ smdk2400_config	:	unconfig
 
 smdk2410_config	:	unconfig
 	@$(MKCONFIG) $(@:_config=) arm arm920t smdk2410 samsung s3c24x0
+
+
 
 spear300_config \
 spear310_config \

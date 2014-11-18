@@ -31,7 +31,6 @@
 #include <common.h>
 #include <netdev.h>
 #include <asm/arch/s3c24x0_cpu.h>
-#include <s3c2410.h>
 #include <video_fb.h>
 
 #if defined(CONFIG_CMD_NAND)
@@ -163,9 +162,8 @@ int board_init (void)
 
 	icache_enable();
 	dcache_enable();
-#if
-	defined(CONFIG_MINI2440_LED)
-		gpio->GPBDAT = 0x00000181;
+#if	defined(CONFIG_MINI2440_LED)
+	gpio->GPBDAT = 0x00000181;
 #endif
 
 	return 0;

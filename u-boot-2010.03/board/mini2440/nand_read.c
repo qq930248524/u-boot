@@ -16,51 +16,42 @@
  * */
 #include <common.h>
 #include <linux/mtd/nand.h>
-#define __REGb(x)
-(*(volatile unsigned char *)(x))
-#define __REGw(x)
-	(*(volatile unsigned short *)(x))
-#define __REGi(x)
-	(*(volatile unsigned int *)(x))
-#define NF_BASE
-	0x4e000000
+#define __REGb(x)	(*(volatile unsigned char *)(x))
+#define __REGw(x)	(*(volatile unsigned short *)(x))
+#define __REGi(x)	(*(volatile unsigned int *)(x))
+#define NF_BASE	0x4e000000
 #if defined(CONFIG_S3C2410)
-#define NFCONF
-	__REGi(NF_BASE + 0x0)
-#define NFCMD
-	__REGb(NF_BASE + 0x4)#define NFADDR
-	__REGb(NF_BASE + 0x8)
-#define NFDATA
-	__REGb(NF_BASE + 0xc)
-#define NFSTAT
-	__REGb(NF_BASE + 0x10)
+#define NFCONF	__REGi(NF_BASE + 0x0)
+#define NFCMD	__REGb(NF_BASE + 0x4)
+#define NFADDR	__REGb(NF_BASE + 0x8)
+#define NFDATA	__REGb(NF_BASE + 0xc)
+#define NFSTAT	__REGb(NF_BASE + 0x10)
 #define NFSTAT_BUSY 1
 #define nand_select() (NFCONF &= ~0x800)
 #define nand_deselect() (NFCONF |= 0x800)
-#define nand_clear_RnB()
-	do {} while (0)
+#define nand_clear_RnB()	do {} while (0)
 #elif defined(CONFIG_S3C2440) || defined(CONFIG_S3C2442)
 #define NFCONF
-	__REGi(NF_BASE + 0x0)
+__REGi(NF_BASE + 0x0)
 #define NFCONT
-	__REGi(NF_BASE + 0x4)
+__REGi(NF_BASE + 0x4)
 #define NFCMD
-	__REGb(NF_BASE + 0x8)
+__REGb(NF_BASE + 0x8)
 #define NFADDR
-	__REGb(NF_BASE + 0xc)
+__REGb(NF_BASE + 0xc)
 #define NFDATA
-	__REGb(NF_BASE + 0x10)
+__REGb(NF_BASE + 0x10)
 #define NFDATA16
-	__REGw(NF_BASE + 0x10)
+__REGw(NF_BASE + 0x10)
 #define NFSTAT
-	__REGb(NF_BASE + 0x20)
+__REGb(NF_BASE + 0x20)
 #define NFSTAT_BUSY 1
 #define nand_select() (NFCONT &= ~(1 << 1))
 #define nand_deselect() (NFCONT |= (1 << 1))
 #define nand_clear_RnB()
-	(NFSTAT |= (1 << 2))
+(NFSTAT |= (1 << 2))
 #endif
-	static inline void nand_wait(void)
+static inline void nand_wait(void)
 {
 	int i;
 	while (!(NFSTAT & NFSTAT_BUSY))
@@ -71,8 +62,7 @@ struct boot_nand_t {
 	int block_size;
 	int bad_block_offset;
 	unsigned long size;
-	};
-
+};
 #if 0
 #if defined(CONFIG_S3C2410) || defined(CONFIG_MINI2440)
 /* configuration for 2410 with 512byte sized flash */
@@ -100,7 +90,8 @@ struct boot_nand_t {
 #endif
 #endif
 static int is_bad_block(struct boot_nand_t * nand, unsigned long i)
-{unsigned char data;
+{
+	unsigned char data;
 	unsigned long page_num;
 	nand_clear_RnB();
 	if (nand->page_size == 512) {
@@ -152,18 +143,20 @@ static int nand_read_page_ll(struct boot_nand_t * nand, unsigned char *buf, unsi
 		return -1;
 	}
 	nand_wait();
-#if defined(CONFIG_S3C2410)for (i = 0; i < nand->page_size; i++) {
-	*buf = (NFDATA & 0xff);
-	buf++;
-}
+#if defined(CONFIG_S3C2410)
+	for (i = 0; i < nand->page_size; i++) {
+		*buf = (NFDATA & 0xff);
+		buf++;
+	}
 #elif defined(CONFIG_S3C2440) || defined(CONFIG_S3C2442)
-for (i = 0; i < (nand->page_size>>1); i++) {
-	*ptr16 = NFDATA16;
-	ptr16++;
-}
+	for (i = 0; i < (nand->page_size>>1); i++) {
+		*ptr16 = NFDATA16;
+		ptr16++;
+	}
 #endif
-return nand->page_size;
+	return nand->page_size;
 }
+
 static unsigned short nand_read_id()
 {
 	unsigned short res = 0;
@@ -197,7 +190,6 @@ int nand_read_ll(unsigned char *buf, unsigned long start_addr, int size)
 		nand.page_size = 512;
 		nand.block_size = 16 * 1024;
 		nand.bad_block_offset = 5;
-		//
 		nand.size = 0x4000000;
 	} else if (nand_id == 0xecf1 ||
 			/* Samsung K9F1G08U0B */
@@ -209,7 +201,8 @@ int nand_read_ll(unsigned char *buf, unsigned long start_addr, int size)
 		//
 		nand.size = 0x8000000;
 	} else {
-		return -1; // hang}
+		return -1; // hang
+	}
 	if ((start_addr & (nand.block_size-1)) || (size & ((nand.block_size-1))))
 		return -1;
 	/* invalid alignment */
